@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, SlidersHorizontal, Tag, Sparkles } from 'lucide-react'
-import { Container, PostCard } from '../components'
+import Container from '../components/container/Container'
+import PostCard from '../components/PostCard'
+
 import appwriteService from "../appwrite/config"
 
 function AllPosts() {

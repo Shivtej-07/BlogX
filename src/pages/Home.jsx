@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import { ArrowRight, Feather, Sparkles, LayoutGrid, Heart } from 'lucide-react'
 import appwriteService from "../appwrite/config"
-import { Container, PostCard } from '../components'
+import Container from '../components/container/Container'
+import PostCard from '../components/PostCard'
+
 
 function Home() {
     const [posts, setPosts] = useState([])
