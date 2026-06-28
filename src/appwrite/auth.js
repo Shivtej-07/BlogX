@@ -93,6 +93,10 @@ export class AuthService {
     try {
       return await this.account.get();
     } catch (error) {
+      // If it's a standard unauthenticated error, just return null (do not switch to mock mode)
+      if (error && error.code === 401) {
+        return null;
+      }
       // Check if we have a mock session as fallback
       const hasSession = localStorage.getItem("blogx_mock_session") === "true";
       if (hasSession) {
