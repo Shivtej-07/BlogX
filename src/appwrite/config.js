@@ -1,5 +1,6 @@
 import conf from '../conf/conf.js';
 import { Client, ID, Databases, Storage, Query } from "appwrite";
+import authService from './auth.js';
 
 export class Service {
     client = new Client();
@@ -53,6 +54,10 @@ export class Service {
     }
 
     async deletePost(slug) {
+        // In mock mode, skip Appwrite and simulate success
+        if (authService.useMock) {
+            return true;
+        }
         try {
             await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
@@ -112,6 +117,10 @@ export class Service {
     }
 
     async deleteFile(fileId) {
+        // In mock mode, skip Appwrite and simulate success
+        if (authService.useMock) {
+            return true;
+        }
         try {
             await this.bucket.deleteFile(
                 conf.appwriteBucketId,
