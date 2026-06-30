@@ -64,13 +64,17 @@ export default function PostForm({ post }) {
         try {
             let fileId = post?.featuredimage || "";
             if (data.image && data.image[0]) {
-                const file = await appwriteService.uploadFile(data.image[0]);
+                const file = await appwriteService.uploadFile(data.image[0], userData?.$id);
                 if (file) {
                     fileId = file.$id;
                     if (post?.featuredimage) {
                         appwriteService.deleteFile(post.featuredimage);
                     }
+                } else {
+                    throw new Error("Failed to upload featured image. Please try again.");
                 }
+            } else if (!post) {
+                throw new Error("Featured image is required.");
             }
 
             const postData = {

@@ -22,7 +22,10 @@ export default function Dashboard() {
     appwriteService.getPosts([]).then((res) => {
       if (res && res.documents) {
         // Filter user posts
-        const userPosts = res.documents.filter(post => post.userId === userData?.$id || post.userId === 'mock-user-123');
+        const userPosts = res.documents.filter(post => 
+          (userData?.$id && (post.userId === userData.$id || post.$permissions?.some(p => p.includes(`user:${userData.$id}`)))) || 
+          post.userId === 'mock-user-123'
+        );
         setPosts(userPosts);
       }
       setLoading(false);

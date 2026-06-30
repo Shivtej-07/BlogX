@@ -1,6 +1,5 @@
 import conf from '../conf/conf.js';
-import { Client, ID, Databases, Storage, Query } from "appwrite";
-import authService from './auth.js';
+import { Client, ID, Databases, Storage, Query, Permission, Role } from "appwrite";
 
 export class Service {
     client = new Client();
@@ -15,7 +14,7 @@ export class Service {
         this.bucket = new Storage(this.client);
     }
 
-    async createPost({ title, slug, content, featuredImage, status, userId }) {
+    async createPost({ title, slug, content, featuredimage, status }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -24,9 +23,8 @@ export class Service {
                 {
                     title,
                     content,
-                    featuredImage,
+                    featuredimage,
                     status,
-                    userId,
                 }
             )
         } catch (error) {
@@ -34,7 +32,7 @@ export class Service {
         }
     }
 
-    async updatePost(slug, { title, content, featuredImage, status }) {
+    async updatePost(slug, { title, content, featuredimage, status }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -43,7 +41,7 @@ export class Service {
                 {
                     title,
                     content,
-                    featuredImage,
+                    featuredimage,
                     status,
 
                 }
@@ -54,10 +52,6 @@ export class Service {
     }
 
     async deletePost(slug) {
-        // In mock mode, skip Appwrite and simulate success
-        if (authService.useMock) {
-            return true;
-        }
         try {
             await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
@@ -103,12 +97,20 @@ export class Service {
 
     // file upload service
 
-    async uploadFile(file) {
+    async uploadFile(file, userId) {
         try {
+            const permissions = [
+                Permission.read(Role.any())
+            ];
+            if (userId) {
+                permissions.push(Permission.update(Role.user(userId)));
+                permissions.push(Permission.delete(Role.user(userId)));
+            }
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
-                file
+                file,
+                permissions
             )
         } catch (error) {
             console.log("Appwrite serive :: uploadFile :: error", error);
@@ -117,10 +119,6 @@ export class Service {
     }
 
     async deleteFile(fileId) {
-        // In mock mode, skip Appwrite and simulate success
-        if (authService.useMock) {
-            return true;
-        }
         try {
             await this.bucket.deleteFile(
                 conf.appwriteBucketId,
@@ -134,7 +132,7 @@ export class Service {
     }
 
     getFilePreview(fileId) {
-        return this.bucket.getFilePreview(
+        return this.bucket.getFileView(
             conf.appwriteBucketId,
             fileId
         )

@@ -45,7 +45,10 @@ export default function Profile() {
     appwriteService.getPosts([]).then((res) => {
       if (res && res.documents) {
         // user's posts
-        const myPosts = res.documents.filter(post => post.userId === userData.$id || post.userId === 'mock-user-123');
+        const myPosts = res.documents.filter(post => 
+          (userData?.$id && (post.userId === userData.$id || post.$permissions?.some(p => p.includes(`user:${userData.$id}`)))) || 
+          post.userId === 'mock-user-123'
+        );
         setPosts(myPosts);
 
         // find bookmarks
